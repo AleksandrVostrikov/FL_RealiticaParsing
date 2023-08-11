@@ -1,0 +1,16 @@
+﻿@model List<string>
+
+<h1>Ссылки, содержащие "detail" в атрибуте href:</h1>
+@if (Model != null && Model.Count > 0)
+{
+    <ul>
+        @foreach (var link in Model)
+        {
+            <li>@link</li>
+        }
+    </ul>
+}
+else
+{
+    <p>@ViewBag.Message</p>
+}
