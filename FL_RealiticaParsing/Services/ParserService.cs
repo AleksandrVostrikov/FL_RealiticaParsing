@@ -1,4 +1,5 @@
 ﻿using HtmlAgilityPack;
+using Microsoft.Extensions.FileSystemGlobbing.Internal;
 using System.Text.RegularExpressions;
 
 namespace FL_RealiticaParsing.Services
@@ -34,9 +35,20 @@ namespace FL_RealiticaParsing.Services
                     }
                 }
             }
-
             return aboutAuthorLinks;
         }
+        public async Task<int> ParseCount(string url)
+        {
+            List<string> aboutAuthorLinks = new List<string>();
+            HtmlWeb web = new HtmlWeb();
+            HtmlDocument doc = await web.LoadFromWebAsync(url);
+            var divNodes = doc.DocumentNode.Descendants()
+                .Where(node =>
+                    node.Name == "div" &&
+                    node.HasClass("thumb_div"));
+            return divNodes.Count();
+        }
+
 
         private async Task<string> GetAboutAuthorLinksAsync(string link)
         {
@@ -73,10 +85,13 @@ namespace FL_RealiticaParsing.Services
 
         private bool IsDesiredLinkFormat(string link)
         {
-            // Define the desired link format using a regular expression
-            string pattern = @"^\/\?action=";
-
-            return Regex.IsMatch(link, pattern);
+            string pattern1 = @"^\/\?action=";
+            string pattern2 = @"^\/[a-zA-Z0-9.,@_\-+]+$";
+            if (Regex.IsMatch(link, pattern1) || Regex.IsMatch(link, pattern2))
+            {
+                return true;
+            }
+            return false;
         }
     }
 }
